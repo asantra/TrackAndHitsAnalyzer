@@ -1,0 +1,7 @@
+#########################
+JobBatchName = EL7_interactive
++ContainerOS = "EL7"
+#+maxWallTime = 36000 #If activated request 10h job
+Request_memory = 64 GB
+Queue
+#########################

@@ -1,5 +1,5 @@
 //
-// This is for electron+laser samples, only print the numbers in a text file, no root file, list of text files containieng root files, distinction in bunch crossing
+// This is for electron+laser samples, only print the numbers in a text file, no root file, list of text files containing root files, distinction in bunch crossing
 
 
 
@@ -51,7 +51,7 @@ int run_process_track_tree_draw(const char *fnlist = 0,  std::string bxNumber=0,
   ofstream trackFile;
   textoutname += std::string("_trackInfo") + std::string(".txt");
   trackFile.open(textoutname, fstream::in | fstream::out | fstream::app);
-  trackFile << "### bxNumber << pdg << track_id << det_id << xx << yy << eneg << ev_weight << vtx_x << vtx_y << vtx_z" << std::endl;
+  trackFile << "### bxNumber << pdg << track_id << det_id << xx << yy << eneg << ev_weight << vtx_x << vtx_y << vtx_z << parentid << pxx << pyy << pzz << physicsprocess << time" << std::endl;
 
   if(debugl)std::cout << "After creating the histograms" << std::endl; 
   
@@ -120,7 +120,7 @@ int run_process_track_tree_draw(const char *fnlist = 0,  std::string bxNumber=0,
 
     if(debugl)std::cout << "After getting primary particle energies" << std::endl;
     for (size_t ii = 0; ii < ntrck; ++ii) {
-        int det_id, pdg, track_id;
+        int det_id, pdg, track_id, parent_id;
         det_id = det_idv[ii];
         pdg = pdgv[ii];
         track_id = track_idv[ii];
@@ -138,14 +138,15 @@ int run_process_track_tree_draw(const char *fnlist = 0,  std::string bxNumber=0,
         vtx_y = vtx_yv[ii];
         vtx_z = vtx_zv[ii];
         physprocess = physprocv[ii];
+        parent_id  = ptidv[ii];
     
         double xproj = pxx/pzz*(zproj-zz) + xx;
         double yproj = pyy/pzz*(zproj-zz) + yy;
         
         if(debugl)std::cout << "Filling up the histograms for tracking planes" << std::endl;
-        if (det_id >= 1000 && det_id <= 1015) {
-            int det = det_id - 1000;
-            trackFile << bxNumber << " " << pdg << " " << track_id << " " << det_id << " " << xx << " " << yy << " " << eneg << " " << ev_weight << " " << vtx_x << " " << vtx_y << " " << vtx_z << std::endl;
+        if (det_id >= 1000 && det_id <= 2000) {
+            //int det = det_id - 1000;
+            trackFile << bxNumber << " " << pdg << " " << track_id << " " << det_id << " " << xx << " " << yy << " " << eneg << " " << ev_weight << " " << vtx_x << " " << vtx_y << " " << vtx_z << " " << parent_id << " " << pxx << " " << pyy << " " << pzz << " " << physprocess << " " << tt << std::endl;
         }
     } //tracks loop
   } // tree loop

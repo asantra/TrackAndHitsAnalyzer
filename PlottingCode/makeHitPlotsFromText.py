@@ -28,17 +28,24 @@ def main():
     parser = argparse.ArgumentParser(description='Code to get 2D plots')
     parser.add_argument('-l', action="store", dest="inFile", type=str, default="ePlusLaserBkgNewSamplesMarch62021_HitsInfo_SortedInEvents_Total249BX.txt")
     parser.add_argument('-b', action="store", dest="bx", type=float, default=249)
+    parser.add_argument('-w', action="store_true", dest="wgt")
     args = parser.parse_args()
     
     inDir = '/Users/arkasantra/arka/Sasha_Work/OutputFile/HitsTextFiles'
     
     bkgFileName   = open(inDir+'/'+args.inFile)
     withoutText   = args.inFile.split('.txt')[0]
-    rootFile      = withoutText+"_HitsPerChipHistogram.root"
     nbx           = args.bx
+    needWeight    = args.wgt
+    
+    if needWeight:
+        rootFile      = withoutText+"_AllPlotsWeighted_HitsPerChipHistogram.root"
+    else:
+        rootFile      = withoutText+"_NoWeight_HitsPerChipHistogram.root"
     
     
     print('BX selected: ',nbx)
+    print('output file: ', rootFile)
     
     outFile       = TFile(inDir+'/'+rootFile, "RECREATE")
     outFile.cd()
@@ -54,6 +61,7 @@ def main():
     allHistoDict  = {}
     for i in range(0, ndet):
         allHistoDict.update({"tracking_planes_hits_x_"+str(i):TH1D("tracking_planes_hits_x_"+str(i),"tracking_planes_hits_x_"+str(i), npixx, 0.0, npixx)})
+        #allHistoDict.update({"tracking_planes_hits_time_"+str(i):TH1D("tracking_planes_hits_time_"+str(i),"tracking_planes_hits_time_"+str(i), 100, 0.0, 50.0)})
         allHistoDict.update({"tracking_planes_hits_Edep_"+str(i):TH1D("tracking_planes_hits_Edep_"+str(i),"tracking_planes_hits_Edep_"+str(i), nbins, xarray)})
         allHistoDict.update({"tracking_planes_hits_y_"+str(i):TH1D("tracking_planes_hits_y_"+str(i),"tracking_planes_hits_y_"+str(i), npixy, 0.0, npixy)})
         allHistoDict.update({"tracking_planes_hits_xy_"+str(i):TH2D("tracking_planes_hits_xy_"+str(i),"tracking_planes_hits_xy_"+str(i), npixx, 0.0, npixx, npixy, 0.0, npixy)})
@@ -75,6 +83,8 @@ def main():
     
     
     lineCounter   = 0
+    positronHit   = 0
+    totalPosHit   = 0
     ### write the bkg as it is
     for lines in bkgFileName.readlines():
         if '#' in lines:
@@ -94,44 +104,56 @@ def main():
         hitcelly        = int(eachWord[7])
         pdgIdString     = eachWord[8]
         hitEnergyString = eachWord[12]
+        
+        if needWeight:
+            plotWeight      = weight
+        else:
+            plotWeight      = 1.0
         #print(pdgIdString)
         
         #if(layer_id==0 and det>3):print("detector: ", detector, " layer_id: ", layer_id, " det: ", det, " histogram id: ", layer_id+det*16)
-        allHistoDict["tracking_planes_hits_x_"+str(layer_id+det*16)].Fill(hitcellx)
-        allHistoDict["tracking_planes_hits_Edep_"+str(layer_id+det*16)].Fill(energy)
-        allHistoDict["tracking_planes_hits_y_"+str(layer_id+det*16)].Fill(hitcelly)
-        allHistoDict["tracking_planes_hits_xy_"+str(layer_id+det*16)].Fill(hitcellx, hitcelly)
+        allHistoDict["tracking_planes_hits_x_"+str(layer_id+det*16)].Fill(hitcellx, plotWeight)
+        allHistoDict["tracking_planes_hits_Edep_"+str(layer_id+det*16)].Fill(energy, plotWeight)
+        allHistoDict["tracking_planes_hits_y_"+str(layer_id+det*16)].Fill(hitcelly, plotWeight)
+        allHistoDict["tracking_planes_hits_xy_"+str(layer_id+det*16)].Fill(hitcellx, hitcelly, plotWeight)
+        
+        if('-11' in pdgIdString and layer_id < 2):
+            positronHit += 1
+            totalPosHit += pdgIdString.count("-11")
         
         ### neutral particles
         neutralPdgIDSet = {'2112', '22', '111'}
         if(('2112' in pdgIdString) or ('22' in pdgIdString) or ('111' in pdgIdString)):
         #if(not (('-11' in pdgIdString) or ('11' in pdgIdString))):
-            allHistoDict["tracking_planesneutral_hits_x_"+str(layer_id+det*16)].Fill(hitcellx)
-            allHistoDict["tracking_planesneutral_hits_Edep_"+str(layer_id+det*16)].Fill(energy)
-            allHistoDict["tracking_planesneutral_hits_y_"+str(layer_id+det*16)].Fill(hitcelly)
-            allHistoDict["tracking_planesneutral_hits_xy_"+str(layer_id+det*16)].Fill(hitcellx, hitcelly)
+            allHistoDict["tracking_planesneutral_hits_x_"+str(layer_id+det*16)].Fill(hitcellx, plotWeight)
+            allHistoDict["tracking_planesneutral_hits_Edep_"+str(layer_id+det*16)].Fill(energy, plotWeight)
+            allHistoDict["tracking_planesneutral_hits_y_"+str(layer_id+det*16)].Fill(hitcelly, plotWeight)
+            allHistoDict["tracking_planesneutral_hits_xy_"+str(layer_id+det*16)].Fill(hitcellx, hitcelly, plotWeight)
             
         ### charged particles
         chargedPdgIDSet = {'2212', '1000140280', '1000140290', '1000140300', '-11', '11'}
         if(('2212' in pdgIdString) or ('-11' in pdgIdString) or ('11' in pdgIdString) or ('1000140280' in pdgIdString) or ('1000140290' in pdgIdString) or ('1000140300' in pdgIdString)):
         #if(('-11' in pdgIdString) or ('11' in pdgIdString)):
-            allHistoDict["tracking_planescharged_hits_x_"+str(layer_id+det*16)].Fill(hitcellx)
-            allHistoDict["tracking_planescharged_hits_Edep_"+str(layer_id+det*16)].Fill(energy)
-            allHistoDict["tracking_planescharged_hits_y_"+str(layer_id+det*16)].Fill(hitcelly)
-            allHistoDict["tracking_planescharged_hits_xy_"+str(layer_id+det*16)].Fill(hitcellx, hitcelly)
+            allHistoDict["tracking_planescharged_hits_x_"+str(layer_id+det*16)].Fill(hitcellx, plotWeight)
+            allHistoDict["tracking_planescharged_hits_Edep_"+str(layer_id+det*16)].Fill(energy, plotWeight)
+            allHistoDict["tracking_planescharged_hits_y_"+str(layer_id+det*16)].Fill(hitcelly, plotWeight)
+            allHistoDict["tracking_planescharged_hits_xy_"+str(layer_id+det*16)].Fill(hitcellx, hitcelly, plotWeight)
             
         
         if(('1000140280' in pdgIdString) or ('1000140290' in pdgIdString) or ('1000140300' in pdgIdString)):
-            allHistoDict["tracking_planessilicon_hits_x_"+str(layer_id+det*16)].Fill(hitcellx)
-            allHistoDict["tracking_planessilicon_hits_Edep_"+str(layer_id+det*16)].Fill(energy)
-            allHistoDict["tracking_planessilicon_hits_y_"+str(layer_id+det*16)].Fill(hitcelly)
-            allHistoDict["tracking_planessilicon_hits_xy_"+str(layer_id+det*16)].Fill(hitcellx, hitcelly)
+            allHistoDict["tracking_planessilicon_hits_x_"+str(layer_id+det*16)].Fill(hitcellx, plotWeight)
+            allHistoDict["tracking_planessilicon_hits_Edep_"+str(layer_id+det*16)].Fill(energy, plotWeight)
+            allHistoDict["tracking_planessilicon_hits_y_"+str(layer_id+det*16)].Fill(hitcelly, plotWeight)
+            allHistoDict["tracking_planessilicon_hits_xy_"+str(layer_id+det*16)].Fill(hitcellx, hitcelly, plotWeight)
             
         
     for keys in allHistoDict:
         allHistoDict[keys].Scale(1./nbx)
         allHistoDict[keys].Write()
     outFile.Close()
+    
+    print("total positron isolated hit: ", positronHit)
+    print("total positron combined hit: ", totalPosHit)
     
     
     

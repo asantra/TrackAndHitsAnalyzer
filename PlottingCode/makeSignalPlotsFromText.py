@@ -8,48 +8,13 @@ import math, array
 from ROOT import *
 from collections import OrderedDict
 import argparse
+mm2m = 1./1000.0
 
-#### add diagonal vertex cut
-#def checkVtxCut(vtxx, vtxz):
-    #if((-45.0 < vtxx <= -25.5 ) and (3800 < vtxz <= 4200)):
-        #return True
-    #elif((-55.0 < vtxx <= -35.0) and (4200 < vtxz <= 4500)):
-        #return True
-    #elif((-60.0 < vtxx <= -45.0) and (4500 < vtxz <= 5000)):
-        #return True
-    #elif((-70 < vtxx <= -50.0) and (5000 < vtxz <= 5500)):
-        #return True
-    #elif((-75 < vtxx <= -60.0) and (5500 < vtxz <= 6000)):
-        #return True 
-    #elif((-80 < vtxx <= -65.0) and (5500 < vtxz <= 6000)):
-        #return True
-    #elif((-90 < vtxx <= -70.0) and (6000 < vtxz <= 6500)):
-        #return True
-    #elif((-100.0 < vtxx <= -80.0) and (6500 < vtxz <= 7000)):
-        #return True
-    #else:
-        #return False
-    
-### anything below x, remove it cut
-def checkVtxCut(vtxx, vtxz):
-    if((vtxx <= -25.5 ) and (3800 < vtxz <= 4200)):
-        return True
-    elif((vtxx <= -35.0) and (4200 < vtxz <= 4500)):
-        return True
-    elif((vtxx <= -45.0) and (4500 < vtxz <= 5000)):
-        return True
-    elif((vtxx <= -50.0) and (5000 < vtxz <= 5500)):
-        return True
-    elif((vtxx <= -60.0) and (5500 < vtxz <= 6000)):
-        return True 
-    elif((vtxx <= -65.0) and (5500 < vtxz <= 6000)):
-        return True
-    elif((vtxx <= -70.0) and (6000 < vtxz <= 6500)):
-        return True
-    elif((vtxx <= -80.0) and (6500 < vtxz <= 7000)):
-        return True
-    else:
-        return False
+def getESeed(LB, xExit, zMid):
+    B = -0.897
+    R = (LB-zMid)*LB/xExit + xExit
+    p = 0.3*B*R*mm2m
+    return p
     
 def energyBins(nbins):
   #//// variable binned in X axis histograms
@@ -83,6 +48,9 @@ def main():
     
     outFile       = TFile(inDir+'/'+rootFile, "RECREATE")
     outFile.cd()
+    
+    outSimplifiedText = open(inDir+'/'+withoutText+"_Layer1Signal.txt","w")
+    outSimplifiedText2 = open(inDir+'/'+withoutText+"_Layer4Signal.txt","w")
     nbins  = 450
     xbins  = energyBins(nbins)
     xarray = array.array('d',xbins)
@@ -90,6 +58,18 @@ def main():
     #print(xarray, " ", len(xarray))
     
     allHistoDict  = {}
+    
+    allHistoDict.update({"tracking_planes_signal_track_x_track_y_dipole_positrons_0":TH2D("tracking_planes_signal_track_x_track_y_dipole_positrons_0", "tracking_planes_signal_track_x_track_y_dipole_positrons_0", 250, 0, 250, 40, -20, 20)})
+    allHistoDict.update({"tracking_planes_signal_track_x_track_y_dipole_positrons_1":TH2D("tracking_planes_signal_track_x_track_y_dipole_positrons_1", "tracking_planes_signal_track_x_track_y_dipole_positrons_1", 250, 0, 250, 40, -20, 20)})
+    allHistoDict.update({"tracking_planes_signal_track_x_track_y_dipole_positrons_8":TH2D("tracking_planes_signal_track_x_track_y_dipole_positrons_8", "tracking_planes_signal_track_x_track_y_dipole_positrons_8", 250, 0, 250, 40, -20, 20)})
+    allHistoDict.update({"tracking_planes_signal_track_x_track_y_dipole_positrons_9":TH2D("tracking_planes_signal_track_x_track_y_dipole_positrons_9", "tracking_planes_signal_track_x_track_y_dipole_positrons_9", 250, 0, 250, 40, -20, 20)})
+    allHistoDict.update({"tracking_planes_signal_track_e_dipole_positrons_log_0":TH1D("tracking_planes_signal_track_e_dipole_positrons_log_0","tracking_planes_signal_track_e_dipole_positrons_log_0; Energy [GeV]; Particles/BX",nbins+1, xarray)})
+    allHistoDict.update({"tracking_planes_signal_track_e_dipole_positrons_log_1":TH1D("tracking_planes_signal_track_e_dipole_positrons_log_1","tracking_planes_signal_track_e_dipole_positrons_log_1; Energy [GeV]; Particles/BX",nbins+1, xarray)})
+    
+    allHistoDict.update({"tracking_planes_signal_delta_track_e_positrons_log_0":TH1D("tracking_planes_signal_delta_track_e_positrons_log_0","tracking_planes_signal_delta_track_e_positrons_log_0; (Actual Energy - Reconstructed Energy) [GeV]; Particles/BX",100, -10,10)})
+    allHistoDict.update({"tracking_planes_signal_delta_track_e_positrons_log_1":TH1D("tracking_planes_signal_delta_track_e_positrons_log_1","tracking_planes_signal_delta_track_e_positrons_log_1; (Actual Energy - Reconstructed Energy) [GeV]; Particles/BX",100, -10,10)})
+    
+    
     for i in range(0, 16):
         #### positrons
         allHistoDict.update({"tracking_planes_signal_track_x_positrons_"+str(i):TH1D("tracking_planes_signal_track_x_positrons_"+str(i),"tracking_planes_signal_track_x_positrons_"+str(i),1300, -650.0, 650.0)})
@@ -102,12 +82,16 @@ def main():
         
         
         
+        
     
     
     lineCounter   = 0
     ### write the bkg as it is
     for lines in bkgFileName.readlines():
+        
         if '#' in lines:
+            outSimplifiedText.write(lines)
+            outSimplifiedText2.write(lines)
             continue
         lineCounter += 1
         if(lineCounter%1000==0): print("processed: ", lineCounter)
@@ -125,11 +109,67 @@ def main():
         vtx_x        = float(eachWord[8])
         vtx_y        = float(eachWord[9])
         vtx_z        = float(eachWord[10])
-        
-        failVtxCut = checkVtxCut(vtx_x, vtx_z)
+        parentId     = float(eachWord[11])
+        pxx          = float(eachWord[12])
+        pyy          = float(eachWord[13])
+        pzz          = float(eachWord[14])
             
         ### positrons
         if(pdgId == -11 and trackId==1):
+            if(staveId==0 or staveId==1):
+                outSimplifiedText.write(lines+"\n")
+            if(staveId==6 or staveId==7):
+                outSimplifiedText2.write(lines+"\n")
+            zproj = 2770.0
+            
+            if(staveId==0):
+                zz = 3962.0125
+                xproj = pxx/pzz*(zproj-zz) + xPos
+                yproj = pyy/pzz*(zproj-zz) + yPos
+                allHistoDict["tracking_planes_signal_track_x_track_y_dipole_positrons_0"].Fill(xproj, yproj, weight)
+                
+                
+                zmid  = zz - xPos*(pzz/pxx)
+                LB    = 1440
+                reconstructE = getESeed(LB, xproj, zmid)
+                deltaE = (energyVal - reconstructE)
+                #print("actual energy: ", energyVal, " reconstructE ", reconstructE, " difference ",deltaE)
+                allHistoDict["tracking_planes_signal_delta_track_e_positrons_log_0"].Fill(deltaE)
+                
+                if(xproj>150):
+                   allHistoDict["tracking_planes_signal_track_e_dipole_positrons_log_0"].Fill(energyVal)
+                   
+                   
+            if(staveId==1):
+                zz = 3950.0125
+                xproj = pxx/pzz*(zproj-zz) + xPos
+                yproj = pyy/pzz*(zproj-zz) + yPos
+                allHistoDict["tracking_planes_signal_track_x_track_y_dipole_positrons_1"].Fill(xproj, yproj, weight)
+                
+                zmid  = zz - xPos*(pzz/pxx)
+                LB    = 1440
+                reconstructE = getESeed(LB, xproj, zmid)
+                deltaE = (energyVal - reconstructE)
+                allHistoDict["tracking_planes_signal_delta_track_e_positrons_log_1"].Fill(deltaE)
+                
+                if(xproj>150):
+                   allHistoDict["tracking_planes_signal_track_e_dipole_positrons_log_1"].Fill(energyVal)
+                   
+                   
+            if(staveId==8):
+                zz = 3962.0125
+                xproj = pxx/pzz*(zproj-zz) + xPos
+                yproj = pyy/pzz*(zproj-zz) + yPos
+                allHistoDict["tracking_planes_signal_track_x_track_y_dipole_positrons_8"].Fill(xproj, yproj, weight)
+                
+                
+            if(staveId==9):
+                zz = 3950.0125
+                xproj = pxx/pzz*(zproj-zz) + xPos
+                yproj = pyy/pzz*(zproj-zz) + yPos
+                allHistoDict["tracking_planes_signal_track_x_track_y_dipole_positrons_9"].Fill(xproj, yproj, weight)
+                
+                
             allHistoDict["tracking_planes_signal_track_x_positrons_"+str(staveId)].Fill(xPos, weight)
             if(energyVal>1.0):
                 allHistoDict["tracking_planes_signal_track_x_positrons_1GeVCut_"+str(staveId)].Fill(xPos, weight)
@@ -144,6 +184,8 @@ def main():
         allHistoDict[keys].Scale(1./nbx)
         allHistoDict[keys].Write()
     outFile.Close()
+    outSimplifiedText.close()
+    outSimplifiedText2.close()
     
 if __name__=="__main__":
     start = time.time()

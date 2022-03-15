@@ -1,4 +1,4 @@
-// this is to prepare output root file for Allpix2. This was used by Master's students. This code will be needed when we work with AllPix2 simulation. 
+// this is to prepare output root file for Allpix2. This was used by Master's students. This code will be needed when we work with AllPix2 simulation. This is for signal samples. Input is the a text file containing the root file
 
 #ifndef __RUN_PROC_HITS_TREE__
 
@@ -110,7 +110,7 @@ int process_hits_tree_draw(const char *fnlist = 0, std::string bxNumber=0, std::
   textoutname2 += std::string("_HitBranchesForAllPix") + std::string(".txt");
   hitFileAllPix.open(textoutname2, fstream::in | fstream::out | fstream::app);
   
-  hitFileAllPix << "## event  energy  time x  y z  detector pdg_code  track_id  parent_id layer_id det hitcellx hitcelly trackz trackE vtxx vtxy vtxz p_x p_y p_z weight totalHitEDep" << std::endl;
+  hitFileAllPix << "## event  energy  time x  y z  detector pdg_code  track_id  parent_id layer_id det hitcellx hitcelly trackz trackE vtxx vtxy vtxz p_x p_y p_z weight totalHitEDep true_type(0=purebkg/1=puresig/2=bkgfromsig)" << std::endl;
   
   
   MHists *lhist = new MHists();
@@ -274,8 +274,18 @@ int process_hits_tree_draw(const char *fnlist = 0, std::string bxNumber=0, std::
           double p_x    = htrcks.px.at(vndx);
           double p_y    = htrcks.py.at(vndx);
           double p_z    = htrcks.pz.at(vndx);
+          int tru_type  = -999;
           
-          hitFileAllPix << event << " " << energy << " " << time << " " << x << " " << y << " " << z << " " << detector << " " << pdg_code << " " << track_id << " " << parent_id << " "  << layer_id << " " << det << " " << hit.cellx << " " << hit.celly << " " << trackz << " " << trackE << " " << vtx_x << " " << vtx_y << " " << vtx_z << " " << p_x << " " << p_y << " " << p_z << " " << evweight << " " << hit.edep << std::endl;
+          
+          /// need to change for g+lser processing
+          if(pdg_code==-11 && track_id==1)
+              tru_type = 1;
+          else if(track_id!=1)
+              tru_type = 2;
+          else 
+              ; 
+          
+          if(layer_id<8) hitFileAllPix << event << " " << energy << " " << time << " " << x << " " << y << " " << z << " " << detector << " " << pdg_code << " " << track_id << " " << parent_id << " "  << layer_id << " " << det << " " << hit.cellx << " " << hit.celly << " " << trackz << " " << trackE << " " << vtx_x << " " << vtx_y << " " << vtx_z << " " << p_x << " " << p_y << " " << p_z << " " << evweight << " " << hit.edep << " " << tru_type << std::endl;
                    
           
           hitTree->Fill();
@@ -321,7 +331,7 @@ int process_hits_tree_draw(const char *fnlist = 0, std::string bxNumber=0, std::
         hitEnergyString      = hitEnergyString.substr(0, hitEnergyString.size()-1);
         hitEnergyString     += "]";
         
-        hitFile << bxNumber << " " << hit.hitid << " " << layer_id << " " << det << " " << hit.edep << " " << ev_weight << " " << hit.cellx << " " << hit.celly << " " << pdgIdString << " " << energyString << " " << trackIdString << " " << vertexString << " " << hitEnergyString << std::endl;
+        if(layer_id<8) hitFile << bxNumber << " " << hit.hitid << " " << layer_id << " " << det << " " << hit.edep << " " << ev_weight << " " << hit.cellx << " " << hit.celly << " " << pdgIdString << " " << energyString << " " << trackIdString << " " << vertexString << " " << hitEnergyString << std::endl;
         
       }
     }

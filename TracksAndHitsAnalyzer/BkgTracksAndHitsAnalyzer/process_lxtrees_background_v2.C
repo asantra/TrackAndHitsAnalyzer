@@ -111,7 +111,7 @@ int process_hits_tree_draw(const char *fnlist = 0, std::string bxNumber=0, std::
   textoutname += std::string("_HitsInfo") + std::string(".txt");
   hitFile.open(textoutname, fstream::in | fstream::out | fstream::app);
   
-  hitFile  << "## bxNumber  hitid  layer_id  det_id  energy  ev_weight  hitcellx  hitcelly pdgIdString  trackEnergyString trackIdString vertexString hitEnergyString" << std::endl;
+  hitFile  << "## bxNumber  hitid  layer_id  det_id  energy  ev_weight  hitcellx  hitcelly pdgIdString  trackEnergyString trackIdString vertexString hitEnergyString true_type" << std::endl;
   
   
   /// write to a text file
@@ -120,7 +120,7 @@ int process_hits_tree_draw(const char *fnlist = 0, std::string bxNumber=0, std::
   hitFileAllPix.open(textoutname2, fstream::in | fstream::out | fstream::app);
   
   
-  hitFileAllPix << "## event  energy  time x  y z  detector pdg_code  track_id  parent_id layer_id det hitcellx hitcelly trackz trackE vtxx vtxy vtxz p_x p_y p_z weight totalHitEDep" << std::endl;
+  hitFileAllPix << "## event  energy  time x  y z  detector pdg_code  track_id  parent_id layer_id det hitcellx hitcelly trackz trackE vtxx vtxy vtxz p_x p_y p_z weight totalHitEDep true_type(0=purebkg/1=puresig/2=bkgfromsig)" << std::endl;
 
   MHists *lhist = new MHists();
   CreateHistograms(lhist);
@@ -235,6 +235,7 @@ int process_hits_tree_draw(const char *fnlist = 0, std::string bxNumber=0, std::
           double p_x  = htrcks.px.at(vndx);
           double p_y  = htrcks.py.at(vndx);
           double p_z  = htrcks.pz.at(vndx);
+          int tru_type = 0;
           
           std::string energyVal = Form("%.5e",htrcks.E.at(vndx));
           trackEnergies.push_back(energyVal);
@@ -242,7 +243,8 @@ int process_hits_tree_draw(const char *fnlist = 0, std::string bxNumber=0, std::
           std::string hitEnergyDeposition = Form("%.5e",energy);
           hitEnergies.push_back(hitEnergyDeposition);
           
-          hitFileAllPix << event << " " << energy << " " << time << " " << x << " " << y << " " << z << " " << detector << " " << pdg_code << " " << track_id << " " << parent_id << " "  << layer_id << " " << det << " " << hit.cellx << " " << hit.celly << " " << trackz << " " << trackE << " " << vtx_x << " " << vtx_y << " " << vtx_z << " " << p_x << " " << p_y << " " << p_z << " " << ev_weight << " " << hit.edep << std::endl;
+          if(layer_id < 8)
+              hitFileAllPix << event << " " << energy << " " << time << " " << x << " " << y << " " << z << " " << detector << " " << pdg_code << " " << track_id << " " << parent_id << " "  << layer_id << " " << det << " " << hit.cellx << " " << hit.celly << " " << trackz << " " << trackE << " " << vtx_x << " " << vtx_y << " " << vtx_z << " " << p_x << " " << p_y << " " << p_z << " " << ev_weight << " " << hit.edep << " " << tru_type << std::endl;
           
           hittrckind++;
           
@@ -274,8 +276,10 @@ int process_hits_tree_draw(const char *fnlist = 0, std::string bxNumber=0, std::
         
         hitEnergyString      = hitEnergyString.substr(0, hitEnergyString.size()-1);
         hitEnergyString     += "]";
+        int tru_type = 0;
         
-        hitFile << bxNumber << " " << hit.hitid << " " << layer_id << " " << det << " " << hit.edep << " " << ev_weight << " " << hit.cellx << " " << hit.celly << " " << pdgIdString << " " << energyString << " " << trackIdString << " " << vertexString << " " << hitEnergyString << std::endl;
+        if(layer_id < 8)
+            hitFile << bxNumber << " " << hit.hitid << " " << layer_id << " " << det << " " << hit.edep << " " << ev_weight << " " << hit.cellx << " " << hit.celly << " " << pdgIdString << " " << energyString << " " << trackIdString << " " << vertexString << " " << hitEnergyString << " " << tru_type << std::endl;
         
       }
     } //hits

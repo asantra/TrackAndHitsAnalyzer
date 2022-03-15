@@ -37,8 +37,8 @@ def main():
     
     #inFileGPlusLaser   = TFile(inDirectory+"/gPlusLaserNewBkgSamples_hits.root")
     
-    #directory = "TDR_Signal_Phase1_xi_10.0_TDR_Background_2p13BX_HitTracksPlots"
-    directory = "TDR_EPlusLaserSignal_Phase1_xi10.0_10BX_TDR_GPlusLaserBackground_1p27BX_HitTracksPlots"
+    directory = "TDR_Signal_Phase0_xi_3.0ppw_NoWeight_TDR_Background_2p13BX_HitTracksPlots"
+    #directory = "TDR_EPlusLaserSignal_Phase1_xi10.0_10BX_TDR_EPlusLaserBackground_2p13BX_HitTracksPlots_NotWeighted"
     if not os.path.exists(directory):
         os.makedirs(directory)
     
@@ -89,6 +89,8 @@ def main():
     FirstElectronETH1   = [];       FirstElectronBkgETH1 = []
     SecondElectronETH1  = [];       SecondElectronBkgETH1 = []
     
+    #### 2D plot
+    FirstTH2 = [];   FirstBkgTH2 = []
     
     
     LegendName = [];       LegendNameBkg = [];
@@ -109,6 +111,18 @@ def main():
             if('tracking_planesneutral_hits_x_' in keys): FirstNeutralTH1.append(tracksPlot_EPlusLaser[keys])
             if('tracking_planescharged_hits_x_' in keys): FirstChargedTH1.append(tracksPlot_EPlusLaser[keys])
             if('tracking_planessilicon_hits_x_' in keys): FirstSiliconTH1.append(tracksPlot_EPlusLaser[keys])
+            if('tracking_planes_hits_xy_' in keys):
+                FirstTH2.append(tracksPlot_EPlusLaser[keys])
+                binContent   = 0
+                binNumberHit = 0
+                for i in range(0, tracksPlot_EPlusLaser[keys].GetNbinsX()+1):
+                    for j in range(0, tracksPlot_EPlusLaser[keys].GetNbinsY()+1):
+                        if(tracksPlot_EPlusLaser[keys].GetBinContent(i,j) > 0):
+                            binContent   += tracksPlot_EPlusLaser[keys].GetBinContent(i,j)
+                            binNumberHit += 1
+                if(binNumberHit!=0): averageOccupancy = binContent/binNumberHit
+                else: averageOccupancy = 0
+                print("Average occupancy for signal: ", averageOccupancy, " for chipLayer ", chip_Layer0)
             
             chip += 1
             LegendName.append("signal")
@@ -159,7 +173,7 @@ def main():
             if('tracking_planesneutral_hits_x_' in keys): FirstBkgNeutralTH1.append(tracksPlot_EPlusLaserBkg[keys])
             if('tracking_planescharged_hits_x_' in keys): FirstBkgChargedTH1.append(tracksPlot_EPlusLaserBkg[keys])
             if('tracking_planessilicon_hits_x_' in keys): FirstBkgSiliconTH1.append(tracksPlot_EPlusLaserBkg[keys])
-            
+            if('tracking_planes_hits_xy_' in keys):FirstBkgTH2.append(tracksPlot_EPlusLaserBkg[keys])
             
             
             LegendNameBkg.append("background")
@@ -265,6 +279,12 @@ def main():
     latexName2   = "Tracker Layer 1, Outer Stave"
     DrawHists9CanvasOverlay(SecondETH1, SecondBkgETH1, SecondLegendName, SecondLegendNameBkg, PlotColor, PlotColorBkg, xAxisName, yAxisName, xrange1down, xrange1up, yrange1down, yrange1up, directory+"/AverageEnergyDeposition_"+plotName+"_Stave1_"+directory, yline1low, yline1up, drawline, logy, latexNameList2, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, drawPattern, logz, logx)
     
+    latexName2   = "Tracker Layer 1, Inner Stave"
+    logy = False
+    leftLegend = True
+    DrawHists9Canvas(FirstTH2, LegendName, PlotColor, "x [pixel]", "y [pixel]", 0, 1024, 0, 512, directory+"/AverageHits2DPlotsSignal_"+plotName+"_Stave0_"+directory, yline1low, yline1up, drawline, logy, latexNameList1, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, "COLZ", logz)
+    
+    DrawHists9Canvas(FirstBkgTH2, LegendNameBkg, PlotColor, "x [pixel]", "y [pixel]", 0, 1024, 0, 512, directory+"/AverageHits2DPlotsBackground_"+plotName+"_Stave0_"+directory, yline1low, yline1up, drawline, logy, latexNameList1, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, "COLZ", logz)
     
     
     ### plot the electron side of the tracker only when needed

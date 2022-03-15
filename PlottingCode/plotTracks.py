@@ -16,7 +16,7 @@ def main():
     gROOT.SetBatch()
     
     parser = argparse.ArgumentParser(description='Code to get 2D plots')
-    parser.add_argument('-l', action="store", dest="inFile", type=str, default="ePlusLaserBackground_list_root_7671ee4c_First3BX_trackInfo.root")
+    parser.add_argument('-l', action="store", dest="inFile", type=str, default="ePlusLaserBackgroundTDR_list_root_7671ee4c_trackInfo_Total2p13BX.root")
     args = parser.parse_args()
     
     
@@ -29,8 +29,8 @@ def main():
         eachName            = inputTracksRootFile.split('.')[0].split('_')
         inTracksFile        = TFile(inputDir+"/"+inputTracksRootFile)
         suffixName          = "_".join(eachName[:])
-        #outDir              = "DistributionPlotsBackground_LongZAxisRange_"+suffixName  ### LongZAxisRange_
-        outDir              = "DistributionPlotsBackground_"+suffixName  ### LongZAxisRange_
+        outDir              = "DistributionPlotsBackground_LongZAxisRange_"+suffixName  ### LongZAxisRange_
+        #outDir              = "DistributionPlotsBackground_"+suffixName+"_LongZAxisRange"  ### LongZAxisRange_
         plotSuffixName      = suffixName
     else:
         inTracksFile        = TFile(inputDir+"/"+inputTracksRootFile)
@@ -46,12 +46,12 @@ def main():
     
     ##### select the x axis range for different particles.
     #### for long X axis, use -1000 to 10000 for all the particles.
-    xAxisRangeLow_electrons            = 2500
-    xAxisRangeHigh_electrons           = 6500
+    xAxisRangeLow_electrons            = -5000
+    xAxisRangeHigh_electrons           = 10000
     xAxisRangeLow_positrons            = 3500
     xAxisRangeHigh_positrons           = 5500
     xAxisRangeLow_gamma                = 1000
-    xAxisRangeHigh_gamma               = 7000
+    xAxisRangeHigh_gamma               = 9000
     xAxisRangeLow_protons              = 3500
     xAxisRangeHigh_protons             = 7000
     xAxisRangeLow_neutrons             = 1000
@@ -65,13 +65,48 @@ def main():
     xAxisRangeLow_neutralparticles     = 1000
     xAxisRangeHigh_neutralparticles    = 9000
     
-    baseHistogramNames["tracking_planes_background_track_e_electrons_log"]        = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-6, 1e4, True, "hist", False, True]
-    baseHistogramNames["tracking_planes_background_track_e_positrons_log"]        = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-6, 1e3, True, "hist", False, True]
-    baseHistogramNames["tracking_planes_background_track_e_gamma_log"]            = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-6, 1e5, True, "hist", False, True]
-    baseHistogramNames["tracking_planes_background_track_e_protons_log"]          = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-6, 1e4, True, "hist", False, True]
-    baseHistogramNames["tracking_planes_background_track_e_neutrons_log"]         = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-6, 1e4, True, "hist", False, True]
-    baseHistogramNames["tracking_planes_background_track_e_muons_log"]            = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-6, 1e4, True, "hist", False, True]
-    baseHistogramNames["tracking_planes_background_track_e_pions_log"]            = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-6, 1e4, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_background_track_e_electrons_log"]        = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_background_track_e_positrons_log"]        = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_background_track_e_gamma_log"]            = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-3, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_background_track_e_protons_log"]          = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_background_track_e_neutrons_log"]         = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-1, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_background_track_e_muons_log"]            = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_background_track_e_pions_log"]            = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    
+    
+    baseHistogramNames["tracking_planes_background_track_time_electrons"]         = ["time [ns]", "Particles/BX", 0.0, 5000.0, 1e-2, 1e5, True, "hist", False, False]
+    baseHistogramNames["tracking_planes_background_track_time_positrons"]         = ["time [ns]", "Particles/BX", 0.0, 5000.0, 1e-2, 1e5, True, "hist", False, False]
+    baseHistogramNames["tracking_planes_background_track_time_gamma"]             = ["time [ns]", "Particles/BX", 0.0, 5000.0, 1e-3, 1e5, True, "hist", False, False]
+    baseHistogramNames["tracking_planes_background_track_time_protons"]           = ["time [ns]", "Particles/BX", 0.0, 5000.0, 1e-2, 1e5, True, "hist", False, False]
+    baseHistogramNames["tracking_planes_background_track_time_neutrons"]          = ["time [ns]", "Particles/BX", 0.0, 5000.0, 1e-1, 1e5, True, "hist", False, False]
+    baseHistogramNames["tracking_planes_background_track_time_muons"]             = ["time [ns]", "Particles/BX", 0.0, 5000.0, 1e-2, 1e5, True, "hist", False, False]
+    baseHistogramNames["tracking_planes_background_track_time_pions"]             = ["time [ns]", "Particles/BX", 0.0, 5000.0, 1e-2, 1e5, True, "hist", False, False]
+    
+    
+    baseHistogramNames["tracking_planes_backgrounddump_track_e_gamma_log"]        = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgroundwindow_track_e_gamma_log"]      = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgroundair_track_e_gamma_log"]         = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgrounddump_track_e_positrons_log"]    = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgroundwindow_track_e_positrons_log"]  = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgroundair_track_e_positrons_log"]     = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgrounddump_track_e_electrons_log"]    = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgroundwindow_track_e_electrons_log"]  = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgroundair_track_e_electrons_log"]     = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgrounddump_track_e_neutrons_log"]     = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgroundwindow_track_e_neutrons_log"]   = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgroundair_track_e_neutrons_log"]      = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgrounddump_track_e_protons_log"]      = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgroundwindow_track_e_protons_log"]    = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgroundair_track_e_protons_log"]       = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgrounddump_track_e_muons_log"]        = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgroundwindow_track_e_muons_log"]      = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgroundair_track_e_muons_log"]         = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgrounddump_track_e_pions_log"]        = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgroundwindow_track_e_pions_log"]      = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgroundair_track_e_pions_log"]         = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgrounddump_track_e_pi0_log"]          = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgroundwindow_track_e_pi0_log"]        = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
+    baseHistogramNames["tracking_planes_backgroundair_track_e_pi0_log"]           = ["E [GeV]", "Particles/BX", 0.0, 20.0, 1e-2, 1e5, True, "hist", False, True]
     
     
     baseHistogramNames["tracking_planes_background_vtx_x_track_e_electrons_log"]  = ["vtx_x [mm]", "E [GeV]", -650.0, 650.0, 1e-6, 20, True, "COLZ", False, False]
@@ -87,7 +122,7 @@ def main():
     baseHistogramNames["tracking_planes_background_vtx_y_track_e_gamma_log"]      = ["vtx_y [mm]", "E [GeV]", -50.0, 50.0, 1e-6, 20, True, "COLZ", False, False]
     baseHistogramNames["tracking_planes_background_vtx_z_track_e_gamma_log"]      = ["vtx_z [mm]", "E [GeV]", xAxisRangeLow_gamma, xAxisRangeHigh_gamma, 1e-6, 20, True, "COLZ", False, False]
     
-    baseHistogramNames["tracking_planes_background_vtxz_vtxx_gamma"]              = ["vtx_z [mm]", "vtx_x [mm]", xAxisRangeLow_gamma, xAxisRangeHigh_gamma, -650.0, 650.0, False, "COLZ", False, False]
+    baseHistogramNames["tracking_planes_background_vtxz_vtxx_gamma"]              = ["vertex z position [mm]", "vertex x position [mm]", xAxisRangeLow_gamma, xAxisRangeHigh_gamma, -650.0, 650.0, False, "COLZ", False, False]
     baseHistogramNames["tracking_planes_background_vtxz_vtxy_gamma"]              = ["vtx_z [mm]", "vtx_y [mm]", xAxisRangeLow_gamma, xAxisRangeHigh_gamma, -50.0, 50.0, False, "COLZ", False, False]
     baseHistogramNames["tracking_planes_background_vtxx_vtxy_gamma"]              = ["vtx_x [mm]", "vtx_y [mm]", -650.0, 650.0, -50.0, 50.0, False, "COLZ", False, False]
     
@@ -117,7 +152,7 @@ def main():
     baseHistogramNames["tracking_planes_background_vtx_y_track_e_neutrons_log"]   = ["vtx_y [mm]", "E [GeV]", -50.0, 50.0, 1e-6, 20, True, "COLZ", False, False]
     baseHistogramNames["tracking_planes_background_vtx_z_track_e_neutrons_log"]   = ["vtx_z [mm]", "E [GeV]", xAxisRangeLow_neutrons, xAxisRangeHigh_neutrons, 1e-6, 20, True, "COLZ", False, False]
     
-    baseHistogramNames["tracking_planes_background_vtxz_vtxx_neutrons"]           = ["vtx_z [mm]", "vtx_x [mm]", xAxisRangeLow_neutrons, xAxisRangeHigh_neutrons, -650.0, 650.0, False, "COLZ", False, False]
+    baseHistogramNames["tracking_planes_background_vtxz_vtxx_neutrons"]           = ["vertex z position [mm]", "vertex x position [mm]", xAxisRangeLow_neutrons, xAxisRangeHigh_neutrons, -650.0, 650.0, False, "COLZ", False, False]
     baseHistogramNames["tracking_planes_background_vtxz_vtxy_neutrons"]           = ["vtx_z [mm]", "vtx_y [mm]", xAxisRangeLow_neutrons, xAxisRangeHigh_neutrons, -50.0, 50.0, False, "COLZ", False, False]
     baseHistogramNames["tracking_planes_background_vtxx_vtxy_neutrons"]           = ["vtx_x [mm]", "vtx_y [mm]", -650.0, 650.0, -50.0, 50.0, False, "COLZ", False, False]
 
@@ -181,6 +216,9 @@ def main():
         for i in range(0,16):
             h = inTracksFile.Get(name+"_"+str(i))
             checkType = str(type(h))
+            if ("TH1" in checkType): 
+                if h.GetNbinsX()%7==0: h = h.Rebin(7)
+                else:                  h = h.Rebin(1)
             if (("TH1" in checkType) or ("TH2" in checkType)):
                 ### scale by the bx
                 #h.Scale(1./23.4)
@@ -277,59 +315,136 @@ def main():
         checkType = str(type(backgroundHistogramDict[keys][0]))
         print(checkType)
         if (("TH1D" in checkType) or ("TH2D" in checkType)):
-            FirstTH1 = backgroundHistogramDict[keys]
+            #if True:
+            if (('dump' in keys) or ('window' in keys) or ('air' in keys)):
+                
+                print("+++++++++++++++ keys in ratio ", keys)
+                if("pi0" in keys): continue
+                FirstTH1 = backgroundHistogramDict[keys]
+                if 'dump' in keys:
+                    baseKey = keys.replace("backgrounddump", "background")
+                elif 'window' in keys:
+                    baseKey = keys.replace("backgroundwindow", "background")
+                elif 'air' in keys:
+                    baseKey = keys.replace("backgroundair", "background")
+                else:
+                    continue
+                BaseTH1 = backgroundHistogramDict[baseKey]
+                                
+                LegendName = []
+                LegendNameCombined = []
+                PlotColor  = [4]*8
+                for stave in range(0,len(FirstTH1)):
+                    LegendName.append("Stave "+str(stave))
+                    LegendNameCombined.append("First layer")
+                eachKey = keys.split('_')
+                if len(eachKey)>7:
+                    latexName = eachKey[7]
+                elif len(eachKey)>5:
+                    latexName = eachKey[5]
+                else:
+                    latexName = "all particle"
+                latexName2 = "background"
+                logy        = False
+                if baseHistogramNames[keys][6]:
+                    logy = True
+                    print ("I am in ", keys)
+                
+                yAxisUp   = 3e1
+                yAxisDown = 5e-4
+                #DrawHists8Canvas(FirstTH1, LegendName, PlotColor, baseHistogramNames[keys][0], baseHistogramNames[keys][1], baseHistogramNames[keys][2], baseHistogramNames[keys][3], baseHistogramNames[keys][4], baseHistogramNames[keys][5], outDir+"/"+keys+"_"+plotSuffixName, 1, 1, drawline, logy, latexName, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, baseHistogramNames[keys][7], baseHistogramNames[keys][8])
+                
+                
+                OnlyStave0 = [FirstTH1[0],BaseTH1[0]]
+                
+                DrawRatioHists(OnlyStave0, LegendName, PlotColor, baseHistogramNames[keys][0], baseHistogramNames[keys][1], baseHistogramNames[keys][2], baseHistogramNames[keys][3], yAxisDown, yAxisUp, outDir+"/"+keys+"_Stave0Ratio_"+plotSuffixName, 1, 1, drawline, logy, latexName, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, baseHistogramNames[keys][7], baseHistogramNames[keys][8], baseHistogramNames[keys][9])
+                
+                #Layer1Hist = FirstTH1[0]
+                #Layer1Hist.Add(FirstTH1[1])
+                #BaseLayer1Hist = BaseTH1[0]
+                #BaseLayer1Hist.Add(BaseTH1[1])
+                
+                #Stave0And1 = [Layer1Hist, BaseLayer1Hist]
+                
+                #DrawRatioHists(Stave0And1, LegendNameCombined, PlotColor, baseHistogramNames[keys][0], baseHistogramNames[keys][1], baseHistogramNames[keys][2], baseHistogramNames[keys][3], baseHistogramNames[keys][4], baseHistogramNames[keys][5], outDir+"/"+keys+"_Stave0And1Ratio"+"_"+plotSuffixName, 1, 1, drawline, logy, '', '', '', False, doAtlas, doLumi, noRatio, do80, do59, baseHistogramNames[keys][7], baseHistogramNames[keys][8], baseHistogramNames[keys][9])
             
-            LegendName = []
-            LegendNameCombined = []
-            PlotColor  = [4]*8
-            for stave in range(0,len(FirstTH1)):
-                LegendName.append("Stave "+str(stave))
-                LegendNameCombined.append("First layer")
-            eachKey = keys.split('_')
-            if len(eachKey)>7:
-                latexName = eachKey[7]
-            elif len(eachKey)>5:
-                latexName = eachKey[5]
+            
+                OnlyStave7 = [FirstTH1[7], BaseTH1[7]]
+                
+                LegendName7= [LegendName[7]]
+                DrawRatioHists(OnlyStave7, LegendName7, PlotColor, baseHistogramNames[keys][0], baseHistogramNames[keys][1], baseHistogramNames[keys][2], baseHistogramNames[keys][3], yAxisDown, yAxisUp, outDir+"/"+keys+"_Stave7Ratio_"+plotSuffixName, 1, 1, drawline, logy, latexName, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, baseHistogramNames[keys][7], baseHistogramNames[keys][8], baseHistogramNames[keys][9])
+                
+                
+                OnlyStave8 = [FirstTH1[8], BaseTH1[8]]
+                
+                LegendName8= [LegendName[8]]
+                DrawRatioHists(OnlyStave8, LegendName8, PlotColor, baseHistogramNames[keys][0], baseHistogramNames[keys][1], baseHistogramNames[keys][2], baseHistogramNames[keys][3], yAxisDown, yAxisUp, outDir+"/"+keys+"_Stave8Ratio_"+plotSuffixName, 1, 1, drawline, logy, latexName, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, baseHistogramNames[keys][7], baseHistogramNames[keys][8], baseHistogramNames[keys][9])
+                
+                
+                OnlyStave15 = [FirstTH1[15], BaseTH1[15]]
+                
+                LegendName15= [LegendName[15]]
+                DrawRatioHists(OnlyStave15, LegendName15, PlotColor, baseHistogramNames[keys][0], baseHistogramNames[keys][1], baseHistogramNames[keys][2], baseHistogramNames[keys][3], yAxisDown, yAxisUp, outDir+"/"+keys+"_Stave15Ratio_"+plotSuffixName, 1, 1, drawline, logy, latexName, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, baseHistogramNames[keys][7], baseHistogramNames[keys][8], baseHistogramNames[keys][9])
+                
+                
             else:
-                latexName = "all particle"
-            latexName2 = "background"
-            logy        = False
-            if baseHistogramNames[keys][6]:
-                logy = True
-                print ("I am in ", keys)
+                
             
-            #DrawHists8Canvas(FirstTH1, LegendName, PlotColor, baseHistogramNames[keys][0], baseHistogramNames[keys][1], baseHistogramNames[keys][2], baseHistogramNames[keys][3], baseHistogramNames[keys][4], baseHistogramNames[keys][5], outDir+"/"+keys+"_"+plotSuffixName, 1, 1, drawline, logy, latexName, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, baseHistogramNames[keys][7], baseHistogramNames[keys][8])
+                print("---------------------- keys ", keys)
+                #boolean = ('dump' in keys)
+                #print("boolean --- ",boolean)
+                FirstTH1 = backgroundHistogramDict[keys]
+                
+                LegendName = []
+                LegendNameCombined = []
+                PlotColor  = [4]*8
+                for stave in range(0,len(FirstTH1)):
+                    LegendName.append("Stave "+str(stave))
+                    LegendNameCombined.append("First layer")
+                eachKey = keys.split('_')
+                if len(eachKey)>7:
+                    latexName = eachKey[7]
+                elif len(eachKey)>5:
+                    latexName = eachKey[5]
+                else:
+                    latexName = "all particle"
+                latexName2 = "background"
+                logy        = False
+                if baseHistogramNames[keys][6]:
+                    logy = True
+                    print ("I am in ", keys)
+                
+                #DrawHists8Canvas(FirstTH1, LegendName, PlotColor, baseHistogramNames[keys][0], baseHistogramNames[keys][1], baseHistogramNames[keys][2], baseHistogramNames[keys][3], baseHistogramNames[keys][4], baseHistogramNames[keys][5], outDir+"/"+keys+"_"+plotSuffixName, 1, 1, drawline, logy, latexName, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, baseHistogramNames[keys][7], baseHistogramNames[keys][8])
+                
+                
+                OnlyStave0 = [FirstTH1[0]]
+                
+                DrawHists(OnlyStave0, LegendName, PlotColor, baseHistogramNames[keys][0], baseHistogramNames[keys][1], baseHistogramNames[keys][2], baseHistogramNames[keys][3], baseHistogramNames[keys][4], baseHistogramNames[keys][5], outDir+"/"+keys+"_Stave0"+"_"+plotSuffixName, 1, 1, drawline, logy, latexName, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, baseHistogramNames[keys][7], baseHistogramNames[keys][8], baseHistogramNames[keys][9])
+                
+                Layer1Hist = FirstTH1[0]
+                Layer1Hist.Add(FirstTH1[1])
+                Stave0And1 = [Layer1Hist]
+                
+                DrawHists(Stave0And1, LegendNameCombined, PlotColor, baseHistogramNames[keys][0], baseHistogramNames[keys][1], baseHistogramNames[keys][2], baseHistogramNames[keys][3], baseHistogramNames[keys][4], baseHistogramNames[keys][5], outDir+"/"+keys+"_Stave0And1"+"_"+plotSuffixName, 1, 1, drawline, logy, '', '', '', False, doAtlas, doLumi, noRatio, do80, do59, baseHistogramNames[keys][7], baseHistogramNames[keys][8], baseHistogramNames[keys][9])
             
             
-            OnlyStave0 = [FirstTH1[0]]
-            
-            DrawHists(OnlyStave0, LegendName, PlotColor, baseHistogramNames[keys][0], baseHistogramNames[keys][1], baseHistogramNames[keys][2], baseHistogramNames[keys][3], baseHistogramNames[keys][4], baseHistogramNames[keys][5], outDir+"/"+keys+"_Stave0"+"_"+plotSuffixName, 1, 1, drawline, logy, latexName, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, baseHistogramNames[keys][7], baseHistogramNames[keys][8], baseHistogramNames[keys][9])
-            
-            Layer1Hist = FirstTH1[0]
-            Layer1Hist.Add(FirstTH1[1])
-            Stave0And1 = [Layer1Hist]
-            
-            DrawHists(Stave0And1, LegendNameCombined, PlotColor, baseHistogramNames[keys][0], baseHistogramNames[keys][1], baseHistogramNames[keys][2], baseHistogramNames[keys][3], baseHistogramNames[keys][4], baseHistogramNames[keys][5], outDir+"/"+keys+"_Stave0And1"+"_"+plotSuffixName, 1, 1, drawline, logy, '', '', '', False, doAtlas, doLumi, noRatio, do80, do59, baseHistogramNames[keys][7], baseHistogramNames[keys][8], baseHistogramNames[keys][9])
-        
-        
-            OnlyStave7 = [FirstTH1[7]]
-            
-            LegendName7= [LegendName[7]]
-            DrawHists(OnlyStave7, LegendName7, PlotColor, baseHistogramNames[keys][0], baseHistogramNames[keys][1], baseHistogramNames[keys][2], baseHistogramNames[keys][3], baseHistogramNames[keys][4], baseHistogramNames[keys][5], outDir+"/"+keys+"_Stave7"+"_"+plotSuffixName, 1, 1, drawline, logy, latexName, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, baseHistogramNames[keys][7], baseHistogramNames[keys][8], baseHistogramNames[keys][9])
-            
-            
-            OnlyStave8 = [FirstTH1[8]]
-            
-            LegendName8= [LegendName[8]]
-            DrawHists(OnlyStave8, LegendName8, PlotColor, baseHistogramNames[keys][0], baseHistogramNames[keys][1], baseHistogramNames[keys][2], baseHistogramNames[keys][3], baseHistogramNames[keys][4], baseHistogramNames[keys][5], outDir+"/"+keys+"_Stave8"+"_"+plotSuffixName, 1, 1, drawline, logy, latexName, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, baseHistogramNames[keys][7], baseHistogramNames[keys][8], baseHistogramNames[keys][9])
-            
-            
-            OnlyStave15 = [FirstTH1[15]]
-            
-            LegendName15= [LegendName[15]]
-            DrawHists(OnlyStave15, LegendName15, PlotColor, baseHistogramNames[keys][0], baseHistogramNames[keys][1], baseHistogramNames[keys][2], baseHistogramNames[keys][3], baseHistogramNames[keys][4], baseHistogramNames[keys][5], outDir+"/"+keys+"_Stave15"+"_"+plotSuffixName, 1, 1, drawline, logy, latexName, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, baseHistogramNames[keys][7], baseHistogramNames[keys][8], baseHistogramNames[keys][9])
-    
-            
+                OnlyStave7 = [FirstTH1[7]]
+                
+                LegendName7= [LegendName[7]]
+                DrawHists(OnlyStave7, LegendName7, PlotColor, baseHistogramNames[keys][0], baseHistogramNames[keys][1], baseHistogramNames[keys][2], baseHistogramNames[keys][3], baseHistogramNames[keys][4], baseHistogramNames[keys][5], outDir+"/"+keys+"_Stave7"+"_"+plotSuffixName, 1, 1, drawline, logy, latexName, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, baseHistogramNames[keys][7], baseHistogramNames[keys][8], baseHistogramNames[keys][9])
+                
+                
+                OnlyStave8 = [FirstTH1[8]]
+                
+                LegendName8= [LegendName[8]]
+                DrawHists(OnlyStave8, LegendName8, PlotColor, baseHistogramNames[keys][0], baseHistogramNames[keys][1], baseHistogramNames[keys][2], baseHistogramNames[keys][3], baseHistogramNames[keys][4], baseHistogramNames[keys][5], outDir+"/"+keys+"_Stave8"+"_"+plotSuffixName, 1, 1, drawline, logy, latexName, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, baseHistogramNames[keys][7], baseHistogramNames[keys][8], baseHistogramNames[keys][9])
+                
+                
+                OnlyStave15 = [FirstTH1[15]]
+                
+                LegendName15= [LegendName[15]]
+                DrawHists(OnlyStave15, LegendName15, PlotColor, baseHistogramNames[keys][0], baseHistogramNames[keys][1], baseHistogramNames[keys][2], baseHistogramNames[keys][3], baseHistogramNames[keys][4], baseHistogramNames[keys][5], outDir+"/"+keys+"_Stave15"+"_"+plotSuffixName, 1, 1, drawline, logy, latexName, latexName2, latexName3, leftLegend, doAtlas, doLumi, noRatio, do80, do59, baseHistogramNames[keys][7], baseHistogramNames[keys][8], baseHistogramNames[keys][9])
+                
     '''
     ###### drawing with the new function
     
