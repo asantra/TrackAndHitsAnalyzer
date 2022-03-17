@@ -109,7 +109,6 @@ def main():
             plotWeight      = weight
         else:
             plotWeight      = 1.0
-        #print(pdgIdString)
         
         #if(layer_id==0 and det>3):print("detector: ", detector, " layer_id: ", layer_id, " det: ", det, " histogram id: ", layer_id+det*16)
         allHistoDict["tracking_planes_hits_x_"+str(layer_id+det*16)].Fill(hitcellx, plotWeight)

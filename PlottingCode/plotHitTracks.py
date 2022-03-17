@@ -15,7 +15,7 @@ def main():
     gROOT.SetBatch()
     
     parser = argparse.ArgumentParser(description='Code to get hit plots')
-    parser.add_argument('-s', action="store", dest="inSignalFile", type=str, default="signalMC_b1gpc_HitsInfo_SortedInEvents_Total10BX_HitsPerChipHistogram.root") ### default is phase 2 signal
+    parser.add_argument('-s', action="store", dest="inSignalFile", type=str, default="signalMC_e0ppw_7.0_HitsInfo_AllPlotsWeighted_HitsPerChipHistogram.root") ### default is phase 2 signal
     parser.add_argument('-b', action="store", dest="inBkgFile", type=str, default="ePlusLaserBackgroundTDR_list_root_7671ee4c_HitsInfo_SortedInEvents_Total2p13BX_HitsPerChipHistogram.root")
     parser.add_argument('-g', action="store_true", dest="gPlusLaser")
     
@@ -37,8 +37,9 @@ def main():
     
     #inFileGPlusLaser   = TFile(inDirectory+"/gPlusLaserNewBkgSamples_hits.root")
     
-    directory = "TDR_Signal_Phase0_xi_3.0ppw_NoWeight_TDR_Background_2p13BX_HitTracksPlots"
+    #directory = "TDR_Signal_Phase0_xi_3.0ppw_NoWeight_TDR_Background_2p13BX_HitTracksPlots"
     #directory = "TDR_EPlusLaserSignal_Phase1_xi10.0_10BX_TDR_EPlusLaserBackground_2p13BX_HitTracksPlots_NotWeighted"
+    directory  = "TDR_EPlusLaserSignal_Phase1_xi7.0_4BX_TDR_EPlusLaserBackground_RedoneMarch162022FromePlusLaserBkg_7671ee4c_Total2p13BX_HitsInfo_2p13BX_HitTracksPlots_NotWeighted"
     if not os.path.exists(directory):
         os.makedirs(directory)
     
@@ -106,8 +107,8 @@ def main():
         #print(keys)
         chip_Layer0 = int(keys.split('_')[4])
         if(chip_Layer0%16 == 0):
-            if('tracking_planes_hits_x_' in keys):FirstTH1.append(tracksPlot_EPlusLaser[keys])
-            if('tracking_planes_hits_Edep' in keys):FirstETH1.append(tracksPlot_EPlusLaser[keys])
+            if('tracking_planes_hits_x_' in keys): FirstTH1.append(tracksPlot_EPlusLaser[keys])
+            if('tracking_planes_hits_Edep' in keys): FirstETH1.append(tracksPlot_EPlusLaser[keys])
             if('tracking_planesneutral_hits_x_' in keys): FirstNeutralTH1.append(tracksPlot_EPlusLaser[keys])
             if('tracking_planescharged_hits_x_' in keys): FirstChargedTH1.append(tracksPlot_EPlusLaser[keys])
             if('tracking_planessilicon_hits_x_' in keys): FirstSiliconTH1.append(tracksPlot_EPlusLaser[keys])
